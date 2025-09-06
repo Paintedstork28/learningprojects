@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - BookFinder Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-content h2 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        .about-content .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        .nav-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+        }
+
+        .nav-link i {
+            margin-right: 10px;
+        }
+
+        .stats-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .main-card {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .about-content h2 {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-book-open"></i> BookFinder Pro</h1>
+            <p>About the Creator</p>
+        </div>
+
+        <div class="main-card">
+            <div class="about-content">
+                <h2>About Me</h2>
+                
+                <p>Welcome to <span class="highlight">BookFinder Pro</span>! I'm passionate about connecting readers with their next great book through the power of technology and artificial intelligence.</p>
+                
+                <p>As an avid reader and technology enthusiast, I created this platform to solve a common problem: finding books that truly match your interests and reading preferences. Too often, we find ourselves stuck in reading ruts or struggling to discover new authors and genres that resonate with us.</p>
+                
+                <p>BookFinder Pro combines <span class="highlight">multiple data sources</span> including Goodreads, web reviews, Reddit recommendations, and community insights to provide you with personalized book suggestions that go beyond simple genre matching.</p>
+
+                <div class="stats-section">
+                    <h3>Platform Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">1000+</span>
+                            <div class="stat-label">Books in Database</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">20+</span>
+                            <div class="stat-label">Genres Covered</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">5</span>
+                            <div class="stat-label">Data Sources</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">24/7</span>
+                            <div class="stat-label">Available</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-brain"></i>
+                        <h3>AI-Powered</h3>
+                        <p>Advanced algorithms analyze your preferences and reading history to suggest the perfect books for you.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-search"></i>
+                        <h3>Multi-Source</h3>
+                        <p>We search across Goodreads, web reviews, Reddit, and other trusted sources to find the best recommendations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-user-cog"></i>
+                        <h3>Personalized</h3>
+                        <p>Every recommendation is tailored to your specific tastes, genres, and reading preferences.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Real-Time</h3>
+                        <p>Get instant recommendations with our fast, responsive search and recommendation engine.</p>
+                    </div>
+                </div>
+
+                <p>Whether you're looking for your next fantasy adventure, a thought-provoking literary work, or something completely different, BookFinder Pro is here to help you discover books that will captivate and inspire you.</p>
+                
+                <p>Thank you for using BookFinder Pro, and happy reading! 📚</p>
+
+                <div style="text-align: center;">
+                    <a href="book-recommender-enhanced.html" class="nav-link">
+                        <i class="fas fa-home"></i> Back to BookFinder Pro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
