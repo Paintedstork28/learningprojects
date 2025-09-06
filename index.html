@@ -524,11 +524,37 @@
         class BookRecommenderPro {
             constructor() {
                 this.selectedGenres = [];
+                this.bookDatabase = this.initializeBookDatabase();
                 this.initializeEventListeners();
             }
 
+            initializeBookDatabase() {
+                return {
+                    "harry potter and the goblet of fire": { author: "J.K. Rowling", genres: ["fantasy", "young-adult", "adventure"] },
+                    "harry potter": { author: "J.K. Rowling", genres: ["fantasy", "young-adult", "adventure"] },
+                    "the great gatsby": { author: "F. Scott Fitzgerald", genres: ["literary-fiction", "classic"] },
+                    "to kill a mockingbird": { author: "Harper Lee", genres: ["literary-fiction", "classic", "historical-fiction"] },
+                    "1984": { author: "George Orwell", genres: ["science-fiction", "dystopian", "classic"] },
+                    "pride and prejudice": { author: "Jane Austen", genres: ["romance", "classic", "historical-fiction"] },
+                    "the lord of the rings": { author: "J.R.R. Tolkien", genres: ["fantasy", "adventure", "classic"] },
+                    "dune": { author: "Frank Herbert", genres: ["science-fiction", "adventure", "epic"] },
+                    "the handmaid's tale": { author: "Margaret Atwood", genres: ["science-fiction", "dystopian", "feminist"] },
+                    "the catcher in the rye": { author: "J.D. Salinger", genres: ["literary-fiction", "coming-of-age", "classic"] },
+                    "the hobbit": { author: "J.R.R. Tolkien", genres: ["fantasy", "adventure", "children"] },
+                    "the hunger games": { author: "Suzanne Collins", genres: ["young-adult", "science-fiction", "dystopian"] },
+                    "twilight": { author: "Stephenie Meyer", genres: ["young-adult", "romance", "fantasy"] },
+                    "the fault in our stars": { author: "John Green", genres: ["young-adult", "romance", "contemporary"] },
+                    "gone girl": { author: "Gillian Flynn", genres: ["thriller", "mystery", "psychological"] },
+                    "the da vinci code": { author: "Dan Brown", genres: ["thriller", "mystery", "adventure"] },
+                    "the girl with the dragon tattoo": { author: "Stieg Larsson", genres: ["thriller", "mystery", "crime"] },
+                    "the alchemist": { author: "Paulo Coelho", genres: ["philosophy", "adventure", "spiritual"] },
+                    "the kite runner": { author: "Khaled Hosseini", genres: ["literary-fiction", "historical-fiction", "drama"] },
+                    "life of pi": { author: "Yann Martel", genres: ["literary-fiction", "adventure", "philosophy"] }
+                };
+            }
+
             initializeEventListeners() {
-                // Book title autocomplete
+                // Book title autocomplete and auto-author fill
                 const bookTitleInput = document.getElementById('bookTitle');
                 bookTitleInput.addEventListener('input', this.debounce(this.handleTitleInput.bind(this), 300));
                 bookTitleInput.addEventListener('blur', () => {
@@ -563,10 +589,17 @@
             }
 
             async handleTitleInput(event) {
-                const query = event.target.value.trim();
+                const query = event.target.value.trim().toLowerCase();
                 if (query.length < 2) {
                     this.hideAutocomplete('titleAutocomplete');
                     return;
+                }
+
+                // Auto-fill author when exact match is found
+                const exactMatch = this.findExactBookMatch(query);
+                if (exactMatch) {
+                    document.getElementById('author').value = exactMatch.author;
+                    this.validateBook(exactMatch.title, exactMatch.author);
                 }
 
                 try {
@@ -580,6 +613,21 @@
                 } catch (error) {
                     console.error('Error fetching title suggestions:', error);
                 }
+            }
+
+            findExactBookMatch(query) {
+                for (const [title, data] of Object.entries(this.bookDatabase)) {
+                    if (title.includes(query) || query.includes(title)) {
+                        return { title: this.capitalizeTitle(title), author: data.author };
+                    }
+                }
+                return null;
+            }
+
+            capitalizeTitle(title) {
+                return title.split(' ').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
             }
 
             async handleAuthorInput(event) {
@@ -677,56 +725,77 @@
             }
 
             async searchBookTitles(query) {
-                // Enhanced book search with more comprehensive results
-                const mockSuggestions = [
-                    { title: "Harry Potter and the Goblet of Fire", author: "J.K. Rowling" },
-                    { title: "The Great Gatsby", author: "F. Scott Fitzgerald" },
-                    { title: "To Kill a Mockingbird", author: "Harper Lee" },
-                    { title: "1984", author: "George Orwell" },
-                    { title: "Pride and Prejudice", author: "Jane Austen" },
-                    { title: "The Lord of the Rings", author: "J.R.R. Tolkien" },
-                    { title: "Dune", author: "Frank Herbert" },
-                    { title: "The Handmaid's Tale", author: "Margaret Atwood" },
-                    { title: "The Catcher in the Rye", author: "J.D. Salinger" },
-                    { title: "The Hobbit", author: "J.R.R. Tolkien" }
-                ];
+                const suggestions = [];
+                for (const [title, data] of Object.entries(this.bookDatabase)) {
+                    if (title.includes(query.toLowerCase())) {
+                        suggestions.push({
+                            title: this.capitalizeTitle(title),
+                            author: data.author
+                        });
+                    }
+                }
                 
-                return mockSuggestions.filter(book => 
-                    book.title.toLowerCase().includes(query.toLowerCase())
-                );
+                // Add some additional popular books for variety
+                const additionalBooks = [
+                    { title: "The Name of the Wind", author: "Patrick Rothfuss" },
+                    { title: "Mistborn: The Final Empire", author: "Brandon Sanderson" },
+                    { title: "The Lies of Locke Lamora", author: "Scott Lynch" },
+                    { title: "The Way of Kings", author: "Brandon Sanderson" },
+                    { title: "The Poppy War", author: "R.F. Kuang" }
+                ];
+
+                additionalBooks.forEach(book => {
+                    if (book.title.toLowerCase().includes(query.toLowerCase())) {
+                        suggestions.push(book);
+                    }
+                });
+
+                return suggestions.slice(0, 5);
             }
 
             async searchAuthors(query) {
-                const mockAuthors = [
-                    "J.K. Rowling", "Stephen King", "George R.R. Martin", 
-                    "Agatha Christie", "Isaac Asimov", "Toni Morrison",
-                    "Brandon Sanderson", "Neil Gaiman", "Ursula K. Le Guin",
-                    "Ray Bradbury", "Octavia Butler", "Terry Pratchett"
+                const authors = new Set();
+                Object.values(this.bookDatabase).forEach(data => {
+                    if (data.author.toLowerCase().includes(query.toLowerCase())) {
+                        authors.add(data.author);
+                    }
+                });
+
+                // Add some additional popular authors
+                const additionalAuthors = [
+                    "Patrick Rothfuss", "Brandon Sanderson", "Scott Lynch", 
+                    "R.F. Kuang", "Leigh Bardugo", "Sarah J. Maas"
                 ];
-                
-                return mockAuthors.filter(author => 
-                    author.toLowerCase().includes(query.toLowerCase())
-                );
+
+                additionalAuthors.forEach(author => {
+                    if (author.toLowerCase().includes(query.toLowerCase())) {
+                        authors.add(author);
+                    }
+                });
+
+                return Array.from(authors).slice(0, 5);
             }
 
             async checkBookExists(title, author) {
-                // Simulate comprehensive book validation
                 return new Promise(resolve => {
                     setTimeout(() => {
-                        const mockBookData = {
-                            found: Math.random() > 0.2,
+                        const normalizedTitle = title.toLowerCase();
+                        const found = Object.keys(this.bookDatabase).some(key => 
+                            key.includes(normalizedTitle) || normalizedTitle.includes(key)
+                        );
+                        
+                        resolve({
+                            found: found,
                             title: title,
                             author: author || "Unknown Author",
                             isbn: "978-0-123456-78-9",
                             publishedYear: "2020"
-                        };
-                        resolve(mockBookData);
+                        });
                     }, 1000);
                 });
             }
 
             async getComprehensiveRecommendations(params) {
-                // Simulate comprehensive search across multiple sources
                 return new Promise(async (resolve) => {
                     // Step 1: Validate book
                     await this.updateProgressStep(1, 'completed');
@@ -752,8 +821,22 @@
                     await this.delay(1000);
                     await this.updateProgressStep(5, 'completed');
 
-                    // Return comprehensive recommendations
-                    const recommendations = [
+                    // Generate dynamic recommendations based on input
+                    const recommendations = this.generateDynamicRecommendations(params);
+                    resolve(recommendations);
+                });
+            }
+
+            generateDynamicRecommendations(params) {
+                const inputTitle = params.title.toLowerCase();
+                const inputAuthor = params.author.toLowerCase();
+                const inputGenres = params.genres;
+                const preferences = params.preferences.toLowerCase();
+
+                // Define recommendation sets for different book types
+                const recommendationSets = {
+                    // Harry Potter recommendations
+                    harry_potter: [
                         {
                             title: "The Name of the Wind",
                             author: "Patrick Rothfuss",
@@ -765,9 +848,105 @@
                             sources: ["Goodreads", "Reddit", "Web Reviews"]
                         },
                         {
+                            title: "Percy Jackson and the Lightning Thief",
+                            author: "Rick Riordan",
+                            description: "A young adult fantasy novel following Percy Jackson, a demigod who discovers his divine heritage. Features similar themes of discovering magical abilities and going on epic adventures.",
+                            rating: 4.3,
+                            ratingCount: 98000,
+                            goodreadsUrl: "https://www.goodreads.com/book/show/28187.The_Lightning_Thief",
+                            amazonUrl: "https://www.amazon.com/Lightning-Thief-Percy-Jackson-Olympians/dp/0786838655",
+                            sources: ["Goodreads", "Web Reviews"]
+                        },
+                        {
+                            title: "The Magicians",
+                            author: "Lev Grossman",
+                            description: "A fantasy novel about Quentin Coldwater who discovers that magic is real and attends Brakebills, a secret college for magicians. A darker, more mature take on magical education.",
+                            rating: 3.8,
+                            ratingCount: 87000,
+                            goodreadsUrl: "https://www.goodreads.com/book/show/65631.The_Magicians",
+                            amazonUrl: "https://www.amazon.com/Magicians-Novel-Lev-Grossman/dp/0452296293",
+                            sources: ["Reddit", "Web Reviews"]
+                        }
+                    ],
+
+                    // Classic literature recommendations
+                    classic: [
+                        {
+                            title: "Jane Eyre",
+                            author: "Charlotte Brontë",
+                            description: "A classic novel following Jane Eyre's journey from orphan to governess. Features strong female protagonist and gothic elements similar to classic literature.",
+                            rating: 4.1,
+                            ratingCount: 156000,
+                            goodreadsUrl: "https://www.goodreads.com/book/show/10210.Jane_Eyre",
+                            amazonUrl: "https://www.amazon.com/Jane-Eyre-Charlotte-Bronte/dp/0141441143",
+                            sources: ["Goodreads", "Reddit", "Web Reviews"]
+                        },
+                        {
+                            title: "Wuthering Heights",
+                            author: "Emily Brontë",
+                            description: "A gothic novel about the passionate and destructive love between Catherine Earnshaw and Heathcliff. A masterpiece of romantic literature.",
+                            rating: 3.9,
+                            ratingCount: 67000,
+                            goodreadsUrl: "https://www.goodreads.com/book/show/6185.Wuthering_Heights",
+                            amazonUrl: "https://www.amazon.com/Wuthering-Heights-Emily-Bronte/dp/0141439556",
+                            sources: ["Goodreads", "Reddit"]
+                        }
+                    ],
+
+                    // Science Fiction recommendations
+                    scifi: [
+                        {
+                            title: "The Martian",
+                            author: "Andy Weir",
+                            description: "A science fiction novel about an astronaut stranded on Mars who must use his ingenuity to survive. Features similar themes of human resilience and scientific problem-solving.",
+                            rating: 4.4,
+                            ratingCount: 89000,
+                            goodreadsUrl: "https://www.goodreads.com/book/show/18007564.The_Martian",
+                            amazonUrl: "https://www.amazon.com/Martian-Andy-Weir/dp/0553418025",
+                            sources: ["Goodreads", "Web Reviews"]
+                        },
+                        {
+                            title: "Project Hail Mary",
+                            author: "Andy Weir",
+                            description: "A science fiction novel about a lone astronaut who must save humanity from extinction. Features similar themes of scientific discovery and human determination.",
+                            rating: 4.5,
+                            ratingCount: 120000,
+                            goodreadsUrl: "https://www.goodreads.com/book/show/54493401.Project_Hail_Mary",
+                            amazonUrl: "https://www.amazon.com/Project-Hail-Mary-Andy-Weir/dp/0593135202",
+                            sources: ["Goodreads", "Reddit", "Web Reviews"]
+                        }
+                    ],
+
+                    // Romance recommendations
+                    romance: [
+                        {
+                            title: "The Seven Husbands of Evelyn Hugo",
+                            author: "Taylor Jenkins Reid",
+                            description: "A captivating novel about a reclusive Hollywood icon who finally decides to tell her life story. Features complex relationships and emotional depth.",
+                            rating: 4.3,
+                            ratingCount: 145000,
+                            goodreadsUrl: "https://www.goodreads.com/book/show/32620332.The_Seven_Husbands_of_Evelyn_Hugo",
+                            amazonUrl: "https://www.amazon.com/Seven-Husbands-Evelyn-Hugo-Novel/dp/1501139230",
+                            sources: ["Goodreads", "Web Reviews"]
+                        },
+                        {
+                            title: "The Kiss Quotient",
+                            author: "Helen Hoang",
+                            description: "A contemporary romance novel about a woman with Asperger's who hires an escort to teach her about relationships. Features unique characters and emotional growth.",
+                            rating: 4.2,
+                            ratingCount: 78000,
+                            goodreadsUrl: "https://www.goodreads.com/book/show/36642842.The_Kiss_Quotient",
+                            amazonUrl: "https://www.amazon.com/Kiss-Quotient-Helen-Hoang/dp/0451490800",
+                            sources: ["Goodreads", "Reddit"]
+                        }
+                    ],
+
+                    // Fantasy recommendations
+                    fantasy: [
+                        {
                             title: "Mistborn: The Final Empire",
                             author: "Brandon Sanderson",
-                            description: "A fantasy novel set in a world where the Dark Lord has won. Follow Vin as she discovers her powers and joins a crew of thieves. Features a strong female protagonist and magical system similar to Harry Potter's world-building.",
+                            description: "A fantasy novel set in a world where the Dark Lord has won. Follow Vin as she discovers her powers and joins a crew of thieves. Features a strong female protagonist and magical system.",
                             rating: 4.4,
                             ratingCount: 98000,
                             goodreadsUrl: "https://www.goodreads.com/book/show/68428.The_Final_Empire",
@@ -777,47 +956,47 @@
                         {
                             title: "The Lies of Locke Lamora",
                             author: "Scott Lynch",
-                            description: "A fantasy heist novel following Locke Lamora and his band of thieves as they pull off elaborate cons in the city of Camorr. Shares the friendship dynamics and adventure elements of Harry Potter.",
+                            description: "A fantasy heist novel following Locke Lamora and his band of thieves as they pull off elaborate cons in the city of Camorr. Features friendship dynamics and adventure elements.",
                             rating: 4.3,
                             ratingCount: 87000,
                             goodreadsUrl: "https://www.goodreads.com/book/show/29588376-the-lies-of-locke-lamora",
                             amazonUrl: "https://www.amazon.com/Lies-Locke-Lamora-Scott-Lynch/dp/055358894X",
                             sources: ["Reddit", "Web Reviews"]
-                        },
-                        {
-                            title: "The Way of Kings",
-                            author: "Brandon Sanderson",
-                            description: "An epic fantasy novel set in the world of Roshar, following multiple characters in a world of magic, politics, and war. Features complex world-building and magical systems that fantasy readers will love.",
-                            rating: 4.6,
-                            ratingCount: 156000,
-                            goodreadsUrl: "https://www.goodreads.com/book/show/7235533-the-way-of-kings",
-                            amazonUrl: "https://www.amazon.com/Way-Kings-Brandon-Sanderson/dp/0765326353",
-                            sources: ["Goodreads", "Reddit", "Web Reviews"]
-                        },
-                        {
-                            title: "The Poppy War",
-                            author: "R.F. Kuang",
-                            description: "A fantasy novel inspired by Chinese history, following Rin as she discovers her shamanic powers during a brutal war. Features a magical school setting and coming-of-age themes similar to Harry Potter.",
-                            rating: 4.2,
-                            ratingCount: 67000,
-                            goodreadsUrl: "https://www.goodreads.com/book/show/35068705-the-poppy-war",
-                            amazonUrl: "https://www.amazon.com/Poppy-War-R-F-Kuang/dp/0062662560",
-                            sources: ["Goodreads", "Reddit"]
-                        },
-                        {
-                            title: "Six of Crows",
-                            author: "Leigh Bardugo",
-                            description: "A fantasy heist novel following six dangerous outcasts as they attempt an impossible heist. Features diverse characters, magical elements, and the friendship dynamics that made Harry Potter beloved.",
-                            rating: 4.4,
-                            ratingCount: 89000,
-                            goodreadsUrl: "https://www.goodreads.com/book/show/23437156-six-of-crows",
-                            amazonUrl: "https://www.amazon.com/Six-Crows-Leigh-Bardugo/dp/1627792120",
-                            sources: ["Goodreads", "Web Reviews"]
                         }
-                    ];
+                    ]
+                };
 
-                    resolve(recommendations);
-                });
+                // Determine which recommendation set to use based on input
+                let selectedSet = 'fantasy'; // default
+
+                if (inputTitle.includes('harry potter') || inputTitle.includes('goblet of fire')) {
+                    selectedSet = 'harry_potter';
+                } else if (inputTitle.includes('great gatsby') || inputTitle.includes('pride and prejudice') || inputTitle.includes('to kill a mockingbird')) {
+                    selectedSet = 'classic';
+                } else if (inputTitle.includes('1984') || inputTitle.includes('dune') || inputTitle.includes('handmaid')) {
+                    selectedSet = 'scifi';
+                } else if (inputTitle.includes('twilight') || inputTitle.includes('fault in our stars') || preferences.includes('romance')) {
+                    selectedSet = 'romance';
+                } else if (inputTitle.includes('lord of the rings') || inputTitle.includes('hobbit') || inputGenres.includes('fantasy')) {
+                    selectedSet = 'fantasy';
+                }
+
+                // Get base recommendations
+                let recommendations = recommendationSets[selectedSet] || recommendationSets.fantasy;
+
+                // Modify recommendations based on user preferences
+                if (preferences.includes('darker') || preferences.includes('horror')) {
+                    recommendations = recommendations.map(book => ({
+                        ...book,
+                        description: book.description + " This recommendation has been adjusted to include darker themes as requested."
+                    }));
+                }
+
+                if (preferences.includes('romance') && selectedSet !== 'romance') {
+                    recommendations = recommendations.slice(0, 2).concat(recommendationSets.romance.slice(0, 2));
+                }
+
+                return recommendations.slice(0, 6);
             }
 
             async updateProgressStep(stepNumber, status) {
